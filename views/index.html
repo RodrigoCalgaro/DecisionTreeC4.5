@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>D3 - C4.5</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="./../styles/bootstrap.min.css">
+  <link rel="stylesheet" href="./../treant-js/Treant.css" type="text/css" />
+  <link rel="stylesheet" href="./../styles/style.css">
+  <script src="./../scripts/plotly-latest.min.js"></script>
+</head>
+
+<body>
+  <div class="form-control">
+
+
+    <div id="selection-form" class="form-row">
+      <div class="form-group col-md-6">
+        <input type="text" placeholder="Por favor, seleccione un archivo" class="form-control input-small"
+          id="actual-file" disabled="disabled" />
+      </div>
+      <div class="form-group col-md-6">
+        <input type="button" class="btn btn-primary btn-large" value="Seleccionar Archivo" id="select-file" />
+      </div>
+    </div>
+
+    <input type="button" id="reset" value="Reset" class="btn btn-primary btn-large m-4 d-none" onclick="reset()">
+    <div id="chart" class="m-4"></div>
+    <div id="tree-simple" class="m-4"></div>
+  </div>
+
+  <script src="./../treant-js/vendor/jquery.min.js"></script>
+  <script src="./../treant-js/vendor/jquery.easing.js"></script>
+  <script src="./../treant-js/vendor/raphael.js"></script>
+  <script src="./../treant-js/Treant.js"></script>
+  <script src="../scripts/clases.js"></script>
+  <script src="../scripts/decisionTreeCont.js"></script>
+  <script src="../scripts/plotPoints.js"></script>
+  <script src="../scripts/main.js"></script>
+</body>
+
+</html>
