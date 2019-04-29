@@ -5,7 +5,7 @@
   <title>D3 - C4.5</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <link rel="stylesheet" href="./../styles/bootstrap.min.css">
   <link rel="stylesheet" href="./../treant-js/Treant.css" type="text/css" />
   <link rel="stylesheet" href="./../styles/style.css">
@@ -15,20 +15,42 @@
 <body>
   <div class="form-control">
 
-
+    <!-- Para Carga CSV Entrenamiento -->
     <div id="selection-form" class="form-row">
+      <h1 class="form-group col-md-12">Cargar Dataset de Entrenamiento</h1>
       <div class="form-group col-md-6">
         <input type="text" placeholder="Por favor, seleccione un archivo" class="form-control input-small"
-          id="actual-file" disabled="disabled" />
+        id="actual-file" disabled="disabled" />
       </div>
       <div class="form-group col-md-6">
         <input type="button" class="btn btn-primary btn-large" value="Seleccionar Archivo" id="select-file" />
       </div>
     </div>
-
+    
+    <!-- Reset -->
     <input type="button" id="reset" value="Reset" class="btn btn-primary btn-large m-4 d-none" onclick="reset()">
+    <!-- Gráfico de Puntos -->
     <div id="chart" class="m-4"></div>
+    <!-- Gráfico de Árbol -->
     <div id="tree-simple" class="m-4"></div>
+    
+    <!-- Para Carga CSV Test -->
+    <div id="selection-form-test" class="form-row d-none">
+      <h1 class="form-group col-md-12">Cargar Dataset de Test</h1>
+      <div class="form-group col-md-6">
+        <input type="text" placeholder="Por favor, seleccione un archivo" class="form-control input-small"
+        id="actual-file-test" disabled="disabled" />
+      </div>
+      <div class="form-group col-md-6">
+        <input type="button" class="btn btn-primary btn-large" value="Seleccionar Archivo" id="select-file-test" />
+      </div>
+    </div>
+    <!-- Cálculo de Exactitud -->
+    <div id="resultado-test" class="form-row d-none">
+      <h1 id="cantCasos" class="form-group col-md-12">Cantidad de Casos de Test: - </h1>
+      <h1 id="cantCorrectas" class="form-group col-md-12">Cantidad de clasificaciones correctas: - </h1>
+      <h1 id="exactitud" class="form-group col-md-12">Exactitud: - </h1>
+    </div>
   </div>
 
   <script src="./../treant-js/vendor/jquery.min.js"></script>

@@ -1,12 +1,14 @@
 var Arbol = null;
-var threshold = 0
+var threshold = 0.00000000001
+var cantTotalRegistros = 0
 async function generarArbol(D, A) {
-    var result = await decisionTree(D, A, Arbol, "root")
+    cantTotalRegistros = D.length
+    var result = await decisionTree(D, A, Arbol, "root", '')
     return result
 }
 
 
-function decisionTree(D, A, T, Branch) {
+function decisionTree(D, A, T, Branch, subset) {
     // En la primer llamada a la función la variable Arbol = null y se genera el nodo raiz.
     // En la segunda llamada a la función (primer iteración) asigno la raiz (T) a la variable Árbol.
     if (!Arbol) {
@@ -43,15 +45,25 @@ function decisionTree(D, A, T, Branch) {
 
     if (C.length == 1) {
         // Existe una sola Clase cj perteneciente al conjunto de Clases C.
-        // Agrego una hoja al árbol. 
-        var hoja = new Hoja(Branch, C[0])
+        // Agrego una hoja al árbol.
+        var sup = D.length / cantTotalRegistros
+        var conf = 1 
+        var hoja = new Hoja(Branch, C[0], subset, sup, conf)
         T.add(hoja)
         /* CASO BASE 1 */
     } else {
         if (A.length == 0) {
             // El conjunto de atributos A del dataset es nulo. 
             // Agrega una hoja etiquetada con la Clase cj, que es la Clase más frecuente en D.
-            var hoja = new Hoja(Branch, C[0])
+            var C1 = 0 // Cantidad de registros con la Clase 1 (Más frecuente debido a que se ordenó previamente)
+            D.forEach(d => {
+                if (d.Clase == C[0]) {
+                    C1 += 1
+                }
+            });
+            var sup = D.length / cantTotalRegistros
+            var conf = C1 / D.length
+            var hoja = new Hoja(Branch, C[0], subset, sup, conf)
             T.add(hoja)
             /* CASO BASE 2  */
         } else {
@@ -72,11 +84,11 @@ function decisionTree(D, A, T, Branch) {
                     con la funcion giveMeTheBest() 
                 */
                 var current = giveMeTheBest(Ai, D, p0)
-
+                console.log(current)
                 if (current) {
                     if (!Ag || current.gainRatio > Ag.gainRatio) {
                         Ag = current
-                    } else if (current.gainRatio = Ag.gainRatio && current.gain > Ag.gain) {
+                    } else if (current.gainRatio = Ag.gainRatio && current.gain >= Ag.gain) {
                         Ag = current
                     }
                 }
@@ -92,14 +104,22 @@ function decisionTree(D, A, T, Branch) {
             if (Ag.gain < threshold) {
                 // Si la ganancia del atributo Ag es menor al threshold definido
                 // agrega una hoja etiquetada con la Clase cj, que es la Clase más frecuente en D.
-                var hoja = new Hoja(Branch, C[0]);
+                var C1 = 0 // Cantidad de registros con la Clase 1 (Más frecuente debido a que se ordenó previamente)
+                D.forEach(d => {
+                    if (d.Clase == C[0]) {
+                        C1 += 1
+                    }
+                });
+                var sup = D.length / cantTotalRegistros
+                var conf = C1 / D.length
+                var hoja = new Hoja(Branch, C[0], subset, sup, conf);
                 T.add(hoja);
                 /* CASO BASE 3 */
             } else {
                 // Ag es capaz de reducir la impureza p0.
 
                 // Agrego un Nodo para el atributo Ag.
-                var nodo = new Nodo(Branch, Ag.attribute)
+                var nodo = new Nodo(Branch, Ag.attribute, Ag.valueOfSplit, subset)
                 // Si es la primer llamada a la función T = null, por lo tanto nodo será el nodo raíz y no admite el metodo add()
                 if (T) {
                     T.add(nodo)
@@ -126,10 +146,10 @@ function decisionTree(D, A, T, Branch) {
                 });
                 // Si el subset de D no está vacío llamo a la función con los nuevos parámetros 
                 if (DMenoresOIgual != []) {
-                    decisionTree(DMenoresOIgual, A, nodo, '<= ' + Ag.valueOfSplit)
+                    decisionTree(DMenoresOIgual, A, nodo, '<= ' + Ag.valueOfSplit, '<=')
                 }
                 if (DMayor != []) {
-                    decisionTree(DMayor, A, nodo, '> ' + Ag.valueOfSplit)
+                    decisionTree(DMayor, A, nodo, '> ' + Ag.valueOfSplit, '>')
                 }
                 /* LLAMADA RECURSIVA */
             }
@@ -202,13 +222,22 @@ function giveMeTheBest(Ai, D, p0) {
             valuesOfAi.splice(i, 1); 
         }
     }
-
+    if (valuesOfAi.length == 0){
+        best = {
+            gain: 0,
+            splitInfo: 1,
+            gainRatio: 0,
+            attribute: Ai,
+            valueOfSplit: max
+        }
+        return best
+    } 
     valuesOfAi.forEach(ai => {
         // D1 es la partición del dataset con los valores menores o iguales a ai
         var D1 = []
         // D2 es la partición del dataset con los valores mayores a ai
         var D2 = []
-
+        
         var CantMenOIgual = 0
         var CantMayores = 0
         D.forEach(d => {
@@ -220,13 +249,13 @@ function giveMeTheBest(Ai, D, p0) {
                 D2.push(d)
             }
         });
-
+        
         var gain = p0 - (CantMenOIgual / D.length) * impurityEval_1(D1)
         gain = gain - (CantMayores / D.length) * impurityEval_1(D2)
-
+        
         var splitInfo = -(D1.length / D.length) * Math.log2(D1.length / D.length) - (D2.length / D.length) * Math.log2(D2.length / D.length)
         var gainRatio = gain / splitInfo
-
+        
         var aux = {
             gain: gain,
             splitInfo: splitInfo,
@@ -234,7 +263,6 @@ function giveMeTheBest(Ai, D, p0) {
             attribute: Ai,
             valueOfSplit: ai
         }
-
         if (!best) {
             best = aux
         } else {
@@ -250,6 +278,6 @@ function giveMeTheBest(Ai, D, p0) {
             } */
         }
     });
-
+    
     return best
 }
