@@ -60,8 +60,12 @@ function procesarDataset(data) {
 
 async function drawTree(D) {
     var A = ['X', 'Y'];
-
+    var t_inicial =  Date.now();
     Arbol = await generarArbol(D, A)
+    var t_final = Date.now();
+    var t_ejecucion = t_final - t_inicial
+    
+    setEstadisticas(D.length, t_ejecucion)
     //fs.writeFileSync('arbol.json', JSON.stringify(Arbol))
     printTree(Arbol)
     document.querySelector("#selection-form-test").classList.remove('d-none');
