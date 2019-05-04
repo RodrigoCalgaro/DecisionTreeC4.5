@@ -1,5 +1,5 @@
 var Arbol = null;
-var threshold = 0.00000000001
+var threshold = 0
 var cantTotalRegistros = 0
 async function generarArbol(D, A) {
     cantTotalRegistros = D.length
@@ -53,6 +53,7 @@ function decisionTree(D, A, T, Branch, subset) {
         /* CASO BASE 1 */
     } else {
         if (A.length == 0) {
+            /* No se utiliza para atributos contínuos */
             // El conjunto de atributos A del dataset es nulo. 
             // Agrega una hoja etiquetada con la Clase cj, que es la Clase más frecuente en D.
             var C1 = 0 // Cantidad de registros con la Clase 1 (Más frecuente debido a que se ordenó previamente)
@@ -84,7 +85,6 @@ function decisionTree(D, A, T, Branch, subset) {
                     con la funcion giveMeTheBest() 
                 */
                 var current = giveMeTheBest(Ai, D, p0)
-                console.log(current)
                 if (current) {
                     if (!Ag || current.gainRatio > Ag.gainRatio) {
                         Ag = current
@@ -101,7 +101,7 @@ function decisionTree(D, A, T, Branch, subset) {
                 } */
             });
             // Finalizada la evaluación de cada atributo en A comparo la ganancia con el threshold.
-            if (Ag.gain < threshold) {
+            if (Ag.gain <= threshold) {
                 // Si la ganancia del atributo Ag es menor al threshold definido
                 // agrega una hoja etiquetada con la Clase cj, que es la Clase más frecuente en D.
                 var C1 = 0 // Cantidad de registros con la Clase 1 (Más frecuente debido a que se ordenó previamente)

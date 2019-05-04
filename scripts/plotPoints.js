@@ -46,7 +46,7 @@ function plotPoints(Dataset) {
         yaxis: {
             range: [0, 8]
         }, */
-        title: 'Distribución de Puntos'
+        /* title: 'Distribución de Puntos' */
     };
 
     Plotly.newPlot('chart', data, layout);

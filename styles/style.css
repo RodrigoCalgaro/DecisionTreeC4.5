@@ -1,8 +1,20 @@
 body {
   min-width: 800px;
   min-height: 600px;
-  background-color: #f7f7f9;
+  /* background-color: #f7f7f9; */
+  background-image: url(./background.jpg);
+  /* background-size: cover; */
 }
+
+nav {
+    box-shadow: 0 0 15px #000
+}
+
+.card {
+    box-shadow: 0 0 15px #000
+}
+
+
 
 body,
 div,
