@@ -61,11 +61,15 @@ function procesarDataset(data) {
 async function drawTree(D) {
     var A = ['X', 'Y'];
     var t_inicial =  Date.now();
+    var mem_inicial = process.memoryUsage().heapUsed
     Arbol = await generarArbol(D, A)
     var t_final = Date.now();
+    var mem_final = process.memoryUsage().heapUsed
+
     var t_ejecucion = t_final - t_inicial
-    
-    setEstadisticas(D.length, t_ejecucion)
+    var mem_usage = (mem_final - mem_inicial) /1024
+
+    setEstadisticas(D.length, t_ejecucion, mem_usage)
     //fs.writeFileSync('arbol.json', JSON.stringify(Arbol))
     printTree(Arbol)
     document.querySelector("#selection-form-test").classList.remove('d-none');
