@@ -50,11 +50,26 @@
       </div>
       <div class="card-body">
 
-        <div class="alert alert-info" role="alert">
+        <div class="alert alert-info m-4" role="alert">
           <li>El dataset deberá estar en formato CSV.</li>
           <li>La primer fila debe corresponder a los nombres de los atributos.</li>
           <li>La primer columna deberá corresponder al ID del registro.</li>
           <li>La última columna deberá corresponder a la Clase del registro.</li>
+        </div>
+
+        <div class="form-row m-4">
+          <div class="form-group col-md-6">
+            <label for="calculateUsing">Generar Modelo Utilizando</label>
+            <select class="form-control input-small" id="calculateUsing">
+              <option value="gainRatio" selected>Tasa de Ganancia de Información</option>
+              <option value="gain">Ganancia de Información</option>
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="threshold">Umbral de Ganancia (Threshold)</label>
+            <input id="threshold" type="number" min="0" max="1" step="0.00001" value="0"
+              class="form-control input-small">
+          </div>
         </div>
 
         <div id="selection-form" class="form-row m-4">
@@ -71,6 +86,25 @@
     </div>
     <!-- !Carga CSV Entrenamiento -->
 
+    <!-- Gráfico de Árbol -->
+    <div id="arbol" class="card mt-4 d-none">
+      <div class="card-header">
+        <h1 class="form-group col-md-12 mt-3"><b>Árbol Generado</b></h1>
+      </div>
+      <div class="card-body">
+        <div id="cargando" class="">
+          <div class="col-md-12 m-4 d-flex justify-content-center">
+              <div class="loader"></div>
+          </div>
+          <div class="col-md-12 m-4 d-flex justify-content-center">
+              <div><h1 class="col-md-12">Generando modelo, por favor espere.</h1></div>
+          </div>
+        </div>
+        <div id="tree-simple" class="m-4 d-none"></div>
+      </div>
+    </div>
+    <!-- !Gráfico de Árbol -->
+
     <!-- Gráfico de Puntos -->
     <div id="distribucion-de-puntos" class="card mt-4 d-none">
       <div class="card-header">
@@ -82,17 +116,6 @@
     </div>
     <!-- !Gráfico de Puntos -->
 
-    <!-- Gráfico de Árbol -->
-    <div id="arbol" class="card mt-4 d-none">
-      <div class="card-header">
-        <h1 class="form-group col-md-12 mt-3"><b>Árbol Generado</b></h1>
-      </div>
-      <div class="card-body">
-        <div id="tree-simple" class="m-4"></div>
-      </div>
-    </div>
-    <!-- !Gráfico de Árbol -->
-
     <!-- Carga CSV Test -->
     <div id="csv-test" class="card mt-4 d-none">
       <div class="card-header">
@@ -100,14 +123,14 @@
       </div>
       <div class="card-body">
 
-        <div class="alert alert-info" role="alert">
+        <div class="alert alert-info m-4" role="alert">
           <li>El dataset deberá estar en formato CSV.</li>
           <li>La primer fila debe corresponder a los nombres de los atributos.</li>
           <li>La primer columna deberá corresponder al ID del registro.</li>
           <li>La última columna deberá corresponder a la Clase del registro.</li>
         </div>
 
-        <div id="selection-form-test" class="form-row d-none">
+        <div id="selection-form-test" class="form-row d-none m-4">
           <div class="form-group col-md-6">
             <input type="text" placeholder="Por favor, seleccione un archivo" class="form-control input-small"
               id="actual-file-test" disabled="disabled" />
@@ -117,7 +140,7 @@
           </div>
         </div>
         <!-- Exactitud -->
-        <div id="resultado-test" class="form-row d-none">
+        <div id="resultado-test" class="form-row d-none m-4">
           <h1 id="cantCasos" class="form-group col-md-12">Cantidad de Casos de Test: - </h1>
           <h1 id="cantCorrectas" class="form-group col-md-12">Cantidad de clasificaciones correctas: - </h1>
           <h1 id="exactitud" class="form-group col-md-12">Exactitud: - </h1>
@@ -135,12 +158,13 @@
       </div>
       <div class="card-body">
 
-        <div class="alert alert-info" role="alert">
-          <p>El tiempo de ejecución y uso de memoria corresponden únicamente a la ejecución del script de clasificación.</p>
+        <div class="alert alert-info m-4" role="alert">
+          <p>El tiempo de ejecución y uso de memoria corresponden únicamente a la ejecución del script de clasificación.
+          </p>
         </div>
 
 
-        <div id="" class="form-row">
+        <div id="" class="form-row m-4">
           <h1 id="cantRegistros" class="form-group col-md-12"></h1>
           <h1 id="tiempoEjec" class="form-group col-md-12"></h1>
           <h1 id="usoMemoria" class="form-group col-md-12"></h1>

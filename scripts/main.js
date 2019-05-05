@@ -2,7 +2,6 @@ const dialog = require('electron').remote.dialog;
 const csv = require('csv');
 var fs = require('fs');
 var Arbol;
-//var threshold = 0;
 
 /* Agrego un evento al botón "Seleccionar Archivo" para que despliegue el cuadro de selección de archivos */
 document.getElementById('select-file').addEventListener('click', () => {
@@ -14,15 +13,17 @@ document.getElementById('select-file').addEventListener('click', () => {
         if (fileNames === undefined) {
             console.log("No file selected");
         } else {
-            document.getElementById("actual-file").value = fileNames[0];
-            document.querySelector("#chart").innerHTML = '';
-            document.querySelector("#tree-simple").innerHTML = '';
-            document.querySelector("#csv-entrenamiento").classList.add('d-none');
-            document.querySelector("#reset").classList.remove('d-none');
-            document.querySelector("#navbar").classList.remove('d-none');
-            document.querySelector("#arbol").classList.remove('d-none');
+            if (confirm(`Generar Árbol de Decisión para ${fileNames[0]}`)) {
+                document.getElementById("actual-file").value = fileNames[0];
+                document.querySelector("#chart").innerHTML = '';
+                document.querySelector("#tree-simple").innerHTML = '';
+                document.querySelector("#csv-entrenamiento").classList.add('d-none');
+                document.querySelector("#reset").classList.remove('d-none');
+                document.querySelector("#navbar").classList.remove('d-none');
+                document.querySelector("#arbol").classList.remove('d-none');
 
-            readFile(fileNames[0]);
+                readFile(fileNames[0]);
+            }
         }
     });
 }, false);
@@ -48,6 +49,7 @@ function readFile(filepath) {
 }
 
 var D = [];
+
 function procesarDataset(data) {
     /* var D = []; */
     data.shift() // remuevo el primer objeto (cabecera) que contiene los nombres de los atributos 
@@ -60,14 +62,18 @@ function procesarDataset(data) {
 
 async function drawTree(D) {
     var A = ['X', 'Y'];
-    var t_inicial =  Date.now();
+    var threshold = parseFloat(document.querySelector("#threshold").value);
+    var calculateUsing = document.querySelector("#calculateUsing").value;
+
+    var t_inicial = Date.now();
     var mem_inicial = process.memoryUsage().heapUsed
-    Arbol = await generarArbol(D, A)
+    /* Llamada a la función que genera el árbol */
+    Arbol = await generarArbol(D, A, threshold, calculateUsing)
     var t_final = Date.now();
     var mem_final = process.memoryUsage().heapUsed
 
     var t_ejecucion = t_final - t_inicial
-    var mem_usage = (mem_final - mem_inicial) /1024
+    var mem_usage = (mem_final - mem_inicial) / 1024
 
     setEstadisticas(D.length, t_ejecucion, mem_usage)
     //fs.writeFileSync('arbol.json', JSON.stringify(Arbol))
@@ -77,6 +83,17 @@ async function drawTree(D) {
 
 /* Para Graficar el Árbol */
 async function printTree(Arbol) {
+    var sup = '';
+    var conf = '';
+    var name = '';
+    if (!hasChilds(Arbol)) {
+        name = 'Clase: ' + Arbol.name
+        sup = 'Soporte ' + parseFloat(Arbol.support * 100).toFixed(2) + ' %'
+        conf = 'Confianza ' + parseFloat(Arbol.confidence * 100).toFixed(2) + ' %'
+    } else {
+        name = 'Atributo: ' + Arbol.name
+    }
+
     var simple_chart_config = {
         chart: {
             container: "#tree-simple",
@@ -89,11 +106,15 @@ async function printTree(Arbol) {
         nodeStructure: {
             text: {
                 branch: 'Branch: root',
-                name: 'Atributo: ' + Arbol.name
+                name: name,
+                support: sup,
+                confidence: conf,
             },
             children: await getChilds(Arbol)
         }
     };
+    document.querySelector("#cargando").classList.add("d-none")
+    document.querySelector("#tree-simple").classList.remove("d-none")
     var my_chart = new Treant(simple_chart_config);
 }
 
@@ -179,9 +200,9 @@ function readFilePrueba(filepath) {
             }
             procesarDatasetPrueba(data)
         })
-        
+
     });
-    
+
 }
 
 function procesarDatasetPrueba(data) {
@@ -190,7 +211,7 @@ function procesarDatasetPrueba(data) {
     data.forEach(row => {
         D.push(new Point(parseFloat(row[1]), parseFloat(row[2]), row[3]))
     })
-    
+
     cantCasos = 0
     cantCorrectas = 0
     exactitud = 0

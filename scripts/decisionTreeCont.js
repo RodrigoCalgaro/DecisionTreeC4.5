@@ -1,20 +1,17 @@
 var Arbol = null;
-var threshold = 0
-var cantTotalRegistros = 0
-async function generarArbol(D, A) {
-    cantTotalRegistros = D.length
-    var result = await decisionTree(D, A, Arbol, "root", '')
-    return result
+var threshold = 0;
+var calculateUsing = 'gainRatio';
+var cantTotalRegistros = 0;
+async function generarArbol(D, A, umbral, use) {
+    cantTotalRegistros = D.length;
+    threshold = umbral;
+    calculateUsing = use;
+    var result = await decisionTree(D, A, Arbol, "root", '');
+    return result;
 }
 
 
 function decisionTree(D, A, T, Branch, subset) {
-    // En la primer llamada a la función la variable Arbol = null y se genera el nodo raiz.
-    // En la segunda llamada a la función (primer iteración) asigno la raiz (T) a la variable Árbol.
-    if (!Arbol) {
-        Arbol = T
-    }
-
     // Cargo en C los Cj del dataset.       
     var C = [] // Defino un arreglo vacío
     D.forEach(d => {
@@ -47,9 +44,13 @@ function decisionTree(D, A, T, Branch, subset) {
         // Existe una sola Clase cj perteneciente al conjunto de Clases C.
         // Agrego una hoja al árbol.
         var sup = D.length / cantTotalRegistros
-        var conf = 1 
+        var conf = 1
         var hoja = new Hoja(Branch, C[0], subset, sup, conf)
-        T.add(hoja)
+        if (T) {
+            T.add(hoja);
+        } else {
+            T = hoja
+        }
         /* CASO BASE 1 */
     } else {
         if (A.length == 0) {
@@ -65,7 +66,11 @@ function decisionTree(D, A, T, Branch, subset) {
             var sup = D.length / cantTotalRegistros
             var conf = C1 / D.length
             var hoja = new Hoja(Branch, C[0], subset, sup, conf)
-            T.add(hoja)
+            if (T) {
+                T.add(hoja);
+            } else {
+                T = hoja
+            }
             /* CASO BASE 2  */
         } else {
             // D contiene ejemplos pertenecientes a una mezcla de Clases. 
@@ -85,23 +90,26 @@ function decisionTree(D, A, T, Branch, subset) {
                     con la funcion giveMeTheBest() 
                 */
                 var current = giveMeTheBest(Ai, D, p0)
-                if (current) {
+                if (calculateUsing == 'gainRatio') {
                     if (!Ag || current.gainRatio > Ag.gainRatio) {
-                        Ag = current
-                    } else if (current.gainRatio = Ag.gainRatio && current.gain >= Ag.gain) {
                         Ag = current
                     }
                 }
-               /*  if (current) {
+                if (calculateUsing == 'gain') {
                     if (!Ag || current.gain > Ag.gain) {
                         Ag = current
-                    } else if (current.gain = Ag.gain && current.gainRatio > Ag.gainRatio) {
-                        Ag = current
                     }
-                } */
+                }
             });
+            //console.log(`Gain: ${Ag.gain}, GainRatio: ${Ag.gainRatio}, Branch: ${Branch}`)
             // Finalizada la evaluación de cada atributo en A comparo la ganancia con el threshold.
-            if (Ag.gain <= threshold) {
+            var best;
+            if (calculateUsing == 'gainRatio') {
+                best = Ag.gainRatio
+            } else {
+                best = Ag.gain
+            }
+            if (best <= threshold) {
                 // Si la ganancia del atributo Ag es menor al threshold definido
                 // agrega una hoja etiquetada con la Clase cj, que es la Clase más frecuente en D.
                 var C1 = 0 // Cantidad de registros con la Clase 1 (Más frecuente debido a que se ordenó previamente)
@@ -113,7 +121,11 @@ function decisionTree(D, A, T, Branch, subset) {
                 var sup = D.length / cantTotalRegistros
                 var conf = C1 / D.length
                 var hoja = new Hoja(Branch, C[0], subset, sup, conf);
-                T.add(hoja);
+                if (T) {
+                    T.add(hoja);
+                } else {
+                    T = hoja
+                }
                 /* CASO BASE 3 */
             } else {
                 // Ag es capaz de reducir la impureza p0.
@@ -156,6 +168,14 @@ function decisionTree(D, A, T, Branch, subset) {
         }
 
     }
+
+    
+    // En la primer llamada a la función la variable Arbol = null y se genera la raiz (T).
+    if (!Arbol) {
+        Arbol = T // asigno la raiz (T) a la variable Arbol.
+    }
+
+    
     return Arbol
 }
 
@@ -211,7 +231,7 @@ function giveMeTheBest(Ai, D, p0) {
     no me interesa evaluar el máximo valor presente en el dataset ya que todos los elementos 
     formarían parte del mismo subconjunto (D1) que sería igual al subconjunto original,
     por lo tanto lo elimino del arreglo valuesOfAi  */
-    
+
     //valuesOfAi = valuesOfAi.sort() // Ordeno los valores de menor a mayor
     //valuesOfAi.pop() // Remuevo el último elemento
 
@@ -219,10 +239,10 @@ function giveMeTheBest(Ai, D, p0) {
 
     for (var i = 0; i < valuesOfAi.length; i++) {
         if (valuesOfAi[i] == max) { // Remuevo el valor Máximo
-            valuesOfAi.splice(i, 1); 
+            valuesOfAi.splice(i, 1);
         }
     }
-    if (valuesOfAi.length == 0){
+    if (valuesOfAi.length == 0) {
         best = {
             gain: 0,
             splitInfo: 1,
@@ -231,13 +251,13 @@ function giveMeTheBest(Ai, D, p0) {
             valueOfSplit: max
         }
         return best
-    } 
+    }
     valuesOfAi.forEach(ai => {
         // D1 es la partición del dataset con los valores menores o iguales a ai
         var D1 = []
         // D2 es la partición del dataset con los valores mayores a ai
         var D2 = []
-        
+
         var CantMenOIgual = 0
         var CantMayores = 0
         D.forEach(d => {
@@ -249,35 +269,35 @@ function giveMeTheBest(Ai, D, p0) {
                 D2.push(d)
             }
         });
-        
-        var gain = p0 - (CantMenOIgual / D.length) * impurityEval_1(D1)
+
+        var gain = p0
+        gain = gain - (CantMenOIgual / D.length) * impurityEval_1(D1)
         gain = gain - (CantMayores / D.length) * impurityEval_1(D2)
-        
+
         var splitInfo = -(D1.length / D.length) * Math.log2(D1.length / D.length) - (D2.length / D.length) * Math.log2(D2.length / D.length)
         var gainRatio = gain / splitInfo
-        
+
         var aux = {
-            gain: gain,
-            splitInfo: splitInfo,
-            gainRatio: gainRatio,
+            gain,
+            gainRatio,
+            splitInfo,
             attribute: Ai,
             valueOfSplit: ai
         }
         if (!best) {
             best = aux
         } else {
-            if (aux.gainRatio > best.gainRatio) {
-                best = aux
-            } else if (aux.gainRatio = best.gainRatio && aux.gain > best.gain) {
-                best = aux
+            if (calculateUsing == 'gainRatio') {
+                if (aux.gainRatio > best.gainRatio) {
+                    best = aux
+                }
+            } else {
+                if (aux.gain > best.gain) {
+                    best = aux
+                }
             }
-            /* if (aux.gain > best.gain) {
-                best = aux
-            } else if (aux.gain = best.gain && aux.gainRatio > best.gainRatio) {
-                best = aux
-            } */
         }
     });
-    
+
     return best
 }
