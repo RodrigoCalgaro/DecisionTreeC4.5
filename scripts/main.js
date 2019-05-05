@@ -82,6 +82,8 @@ async function drawTree(D) {
 }
 
 /* Para Graficar el Árbol */
+var collapsed = true
+
 async function printTree(Arbol) {
     var sup = '';
     var conf = '';
@@ -114,6 +116,7 @@ async function printTree(Arbol) {
         }
     };
     document.querySelector("#cargando").classList.add("d-none")
+    document.querySelector("#colapsar-contraer").classList.remove("d-none")
     document.querySelector("#tree-simple").classList.remove("d-none")
     var my_chart = new Treant(simple_chart_config);
 }
@@ -139,7 +142,7 @@ function getChilds(nodo) {
                     confidence: conf,
                 },
                 collapsable: true,
-                collapsed: hasChilds(element),
+                collapsed: (collapsed)? hasChilds(element): false,
                 children: getChilds(element)
             }]
         })
@@ -154,6 +157,17 @@ function hasChilds(element) {
         return false
     }
 }
+
+function colapsar_contraer(){
+    if (collapsed){
+        collapsed = false
+    } else {
+        collapsed = true
+    }
+    printTree(Arbol);
+}
+
+
 
 /* Reset */
 function reset() {
