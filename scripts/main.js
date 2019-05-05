@@ -76,7 +76,11 @@ async function drawTree(D) {
     var mem_usage = (mem_final - mem_inicial) / 1024
 
     setEstadisticas(D.length, t_ejecucion, mem_usage)
+
     //fs.writeFileSync('arbol.json', JSON.stringify(Arbol))
+    document.querySelector("#iptActual").value = arbolesStepByStep.length
+    document.querySelector("#iptActual").max = arbolesStepByStep.length
+    document.querySelector("#iptTotal").value = arbolesStepByStep.length
     printTree(Arbol)
     document.querySelector("#selection-form-test").classList.remove('d-none');
 }
@@ -115,7 +119,9 @@ async function printTree(Arbol) {
             children: await getChilds(Arbol)
         }
     };
+
     document.querySelector("#cargando").classList.add("d-none")
+    document.querySelector("#step-by-step").classList.remove("d-none")
     document.querySelector("#colapsar-contraer").classList.remove("d-none")
     document.querySelector("#tree-simple").classList.remove("d-none")
     var my_chart = new Treant(simple_chart_config);
@@ -123,7 +129,7 @@ async function printTree(Arbol) {
 
 function getChilds(nodo) {
     var children = []
-    if (nodo.childs) {
+    if (nodo.childs && nodo.childs.length != 0) {
         nodo.childs.forEach(element => {
             //console.log(element)
             var sup = '';
@@ -142,7 +148,7 @@ function getChilds(nodo) {
                     confidence: conf,
                 },
                 collapsable: true,
-                collapsed: (collapsed)? hasChilds(element): false,
+                collapsed: (collapsed) ? hasChilds(element) : false,
                 children: getChilds(element)
             }]
         })
@@ -158,8 +164,8 @@ function hasChilds(element) {
     }
 }
 
-function colapsar_contraer(){
-    if (collapsed){
+function colapsar_contraer() {
+    if (collapsed) {
         collapsed = false
     } else {
         collapsed = true
@@ -167,7 +173,33 @@ function colapsar_contraer(){
     printTree(Arbol);
 }
 
+function redibujarArbol(paso) {
+    if (paso == 1) {
+        document.querySelector("#btnAnterior").disabled = true
+    }
+    if (paso == arbolesStepByStep.length) {
+        document.querySelector("#btnSiguiente").disabled = true
+    }
+    if (paso > 1 && paso < arbolesStepByStep.length) {
+        document.querySelector("#btnAnterior").disabled = false
+        document.querySelector("#btnSiguiente").disabled = false
+    }
 
+    printTree(arbolesStepByStep[parseInt(paso) - 1])
+
+}
+
+function anterior() {
+    var actual = parseInt(document.querySelector("#iptActual").value)
+    document.querySelector("#iptActual").value = actual - 1
+    redibujarArbol(actual - 1)
+}
+
+function siguiente() {
+    var actual = parseInt(document.querySelector("#iptActual").value)
+    document.querySelector("#iptActual").value = actual + 1
+    redibujarArbol(actual + 1)
+}
 
 /* Reset */
 function reset() {

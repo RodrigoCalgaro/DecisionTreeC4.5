@@ -101,6 +101,16 @@
               <div><h1 class="col-md-12">Generando modelo, por favor espere.</h1></div>
           </div>
         </div>
+        <div id="step-by-step" class="d-none">
+          <div class="d-flex justify-content-center">
+              <h1 class="mt-3">Paso</h1>
+              <input id="iptActual" type="number" class="form-control col-md-1 ml-1 mr-1" min="1" onchange="redibujarArbol(this.value)">
+              <h1 class="mt-3">De</h1>
+              <input id="iptTotal" type="number" class="form-control col-md-1 ml-1 mr-1" disabled>
+              <input id="btnAnterior" type="button" class="btn btn-outline-primary ml-1 mr-1" value="Anterior" onclick="anterior()">
+              <input id="btnSiguiente" type="button" class="btn btn-outline-primary ml-1 mr-1" value="Siguiente" onclick="siguiente()" disabled>
+          </div>
+        </div>
         <div id="tree-simple" class="m-4 d-none"></div>
       </div>
     </div>

@@ -2,6 +2,9 @@ var Arbol = null;
 var threshold = 0;
 var calculateUsing = 'gainRatio';
 var cantTotalRegistros = 0;
+var arbolesStepByStep = []
+
+
 async function generarArbol(D, A, umbral, use) {
     cantTotalRegistros = D.length;
     threshold = umbral;
@@ -48,8 +51,11 @@ function decisionTree(D, A, T, Branch, subset) {
         var hoja = new Hoja(Branch, C[0], subset, sup, conf)
         if (T) {
             T.add(hoja);
+            arbolesStepByStep.push(JSON.parse(JSON.stringify(Arbol)))
         } else {
             T = hoja
+            arbolesStepByStep.push(JSON.parse(JSON.stringify(T)))
+            Arbol = T
         }
         /* CASO BASE 1 */
     } else {
@@ -68,8 +74,11 @@ function decisionTree(D, A, T, Branch, subset) {
             var hoja = new Hoja(Branch, C[0], subset, sup, conf)
             if (T) {
                 T.add(hoja);
+                arbolesStepByStep.push(JSON.parse(JSON.stringify(Arbol)))
             } else {
                 T = hoja
+                arbolesStepByStep.push(JSON.parse(JSON.stringify(T)))
+                Arbol = T
             }
             /* CASO BASE 2  */
         } else {
@@ -123,8 +132,11 @@ function decisionTree(D, A, T, Branch, subset) {
                 var hoja = new Hoja(Branch, C[0], subset, sup, conf);
                 if (T) {
                     T.add(hoja);
+                    arbolesStepByStep.push(JSON.parse(JSON.stringify(Arbol)))
                 } else {
                     T = hoja
+                    arbolesStepByStep.push(JSON.parse(JSON.stringify(T)))
+                    Arbol = T
                 }
                 /* CASO BASE 3 */
             } else {
@@ -135,8 +147,11 @@ function decisionTree(D, A, T, Branch, subset) {
                 // Si es la primer llamada a la función T = null, por lo tanto nodo será el nodo raíz y no admite el metodo add()
                 if (T) {
                     T.add(nodo)
+                    arbolesStepByStep.push(JSON.parse(JSON.stringify(Arbol)))
                 } else {
                     T = nodo
+                    arbolesStepByStep.push(JSON.parse(JSON.stringify(T)))
+                    Arbol = T
                 }
 
                 // Partir D en m subconjuntos D1, ..., Dm basados ​​en los m valores de Ag.
@@ -169,13 +184,16 @@ function decisionTree(D, A, T, Branch, subset) {
 
     }
 
-    
-    // En la primer llamada a la función la variable Arbol = null y se genera la raiz (T).
-    if (!Arbol) {
-        Arbol = T // asigno la raiz (T) a la variable Arbol.
-    }
 
-    
+
+    // En la primer llamada a la función la variable Arbol = null y se genera la raiz (T).
+    /* if (!Arbol) {
+        Arbol = T // asigno la raiz (T) a la variable Arbol.
+    } */
+
+    /* //Voy resguardando los árboles generados en cada llamada a la función para la gráfica paso a paso
+    arbolesStepByStep.push(JSON.parse(JSON.stringify(Arbol))) */
+
     return Arbol
 }
 
