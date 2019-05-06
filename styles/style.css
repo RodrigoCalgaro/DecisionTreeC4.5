@@ -71,7 +71,7 @@ img {
     border: 0;
 }
 
-address,
+/* address,
 caption,
 cite,
 code,
@@ -88,7 +88,7 @@ caption,
 th {
     text-align: left;
 }
-
+ */
 h1,
 h2,
 h3,
@@ -139,4 +139,16 @@ acronym {
 
 .Treant .node.collapsed .collapse-switch {
     background: none;
+}
+
+.nodo-puro {
+    background-color: rgba(0, 255, 0, 0.25);
+}
+
+.nodo-impuro {
+    background-color: rgba(255, 0, 0, 0.25);
+}
+
+.node {
+    color: #000;
 }

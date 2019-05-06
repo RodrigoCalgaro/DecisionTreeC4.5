@@ -94,8 +94,8 @@ async function printTree(Arbol) {
     var name = '';
     if (!hasChilds(Arbol)) {
         name = 'Clase: ' + Arbol.name
-        sup = 'Soporte ' + parseFloat(Arbol.support * 100).toFixed(2) + ' %'
-        conf = 'Confianza ' + parseFloat(Arbol.confidence * 100).toFixed(2) + ' %'
+        sup = 'Soporte: ' + parseFloat(Arbol.support * 100).toFixed(2) + ' %'
+        conf = 'Confianza: ' + parseFloat(Arbol.confidence * 100).toFixed(2) + ' %'
     } else {
         name = 'Atributo: ' + Arbol.name
     }
@@ -125,6 +125,7 @@ async function printTree(Arbol) {
     document.querySelector("#colapsar-contraer").classList.remove("d-none")
     document.querySelector("#tree-simple").classList.remove("d-none")
     var my_chart = new Treant(simple_chart_config);
+    colorearNodos();
 }
 
 function getChilds(nodo) {
@@ -137,8 +138,8 @@ function getChilds(nodo) {
             var name = 'Atributo: ' + element.name
             if (!hasChilds(element)) {
                 name = 'Clase: ' + element.name
-                sup = 'Soporte ' + parseFloat(element.support * 100).toFixed(2) + ' %'
-                conf = 'Confianza ' + parseFloat(element.confidence * 100).toFixed(2) + ' %'
+                sup = 'Soporte: ' + parseFloat(element.support * 100).toFixed(2) + ' %'
+                conf = 'Confianza: ' + parseFloat(element.confidence * 100).toFixed(2) + ' %'
             }
             children = [...children, {
                 text: {
