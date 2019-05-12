@@ -5,7 +5,7 @@ var pasos = []
 async function clasificar() {
     var X = parseFloat(document.querySelector("#Xcoord").value)
     var Y = parseFloat(document.querySelector("#Ycoord").value)
-    
+
     document.querySelector("#punto-en-arbol").classList.add("d-none")
     if (isNaN(X) || isNaN(Y)) {
         alert('Para ejecutar esta acción es necesario que los valores de X e Y no sean nulos.')
@@ -14,7 +14,7 @@ async function clasificar() {
             X,
             Y
         }
-        
+
         pasos = []
         divPuntoEnArbol.classList.add("d-none");
         collapsed = false;
@@ -22,15 +22,13 @@ async function clasificar() {
         nodos = divPuntoEnArbol.querySelectorAll(".node-branch")
 
         await clasificarPunto(point, Arbol)
-        //setTimeout(function () {
-            nodos.forEach(nodo => {
-                pasos.forEach(paso => {
-                    if (nodo.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").includes(paso)) {
-                        nodo.parentElement.classList.add('nodo-utilizado')
-                    }
-                })
-            });
-        //}, 1000)
+        nodos.forEach(nodo => {
+            pasos.forEach(paso => {
+                if (nodo.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").includes(paso)) {
+                    nodo.parentElement.classList.add('nodo-utilizado')
+                }
+            })
+        });
     }
 
 }

@@ -1,6 +1,8 @@
 var cantCasos = 0
 var cantCorrectas = 0
 var exactitud = 0
+var tablaIncorrectas = document.querySelector("#tbody")
+
 
 /* Agrego un evento al botón "Seleccionar Archivo" para que despliegue el cuadro de selección de archivos */
 document.getElementById('select-file-test').addEventListener('click', () => {
@@ -49,6 +51,7 @@ function procesarDatasetPrueba(data) {
     cantCasos = 0
     cantCorrectas = 0
     exactitud = 0
+    tablaIncorrectas.innerHTML = ''
     calcularExactitud(D)
 }
 
@@ -90,6 +93,13 @@ async function clasificarElemento(point, Arbol) {
     } else {
         if (Arbol.name == point.Clase) {
             cantCorrectas += 1
+        } else {
+            tablaIncorrectas.innerHTML += `<tr>
+            <td>${point.X}</td>
+            <td>${point.Y}</td>
+            <td>${point.Clase}</td>
+            <td>${Arbol.name}</td>
+          </tr>`
         }
     }
 }
