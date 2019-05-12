@@ -1,5 +1,5 @@
 function colorearNodos() {
-    var nodos = document.querySelectorAll(".node-confidence")
+    var nodos = document.querySelector('#arbol').querySelectorAll(".node-confidence")
     nodos.forEach(nodo => {
         if (nodo.innerHTML == 'Confianza: 100.00 %'){
             nodo.parentElement.classList.add('nodo-puro')

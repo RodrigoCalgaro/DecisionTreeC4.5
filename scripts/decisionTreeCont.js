@@ -110,7 +110,7 @@ function decisionTree(D, A, T, Branch, subset) {
                     }
                 }
             });
-            //console.log(`Gain: ${Ag.gain}, GainRatio: ${Ag.gainRatio}, Branch: ${Branch}`)
+            console.log(`Gain: ${Ag.gain}, GainRatio: ${Ag.gainRatio}, Branch: ${Branch}`)
             // Finalizada la evaluación de cada atributo en A comparo la ganancia con el threshold.
             var best;
             if (calculateUsing == 'gainRatio') {
