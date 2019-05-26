@@ -3,18 +3,36 @@ var threshold = 0;
 var calculateUsing = 'gainRatio';
 var cantTotalRegistros = 0;
 var arbolesStepByStep = []
-
+var partitions = []
+var cantPartitions = 0
 
 async function generarArbol(D, A, umbral, use) {
     cantTotalRegistros = D.length;
     threshold = umbral;
     calculateUsing = use;
-    var result = await decisionTree(D, A, Arbol, "root", '');
+
+
+    var valuesOfX = []
+    D.forEach(d => {
+        valuesOfX.push(d.X)
+    })
+    var Xmin = Math.min(...valuesOfX) * 1.1;
+    var Xmax = Math.max(...valuesOfX) * 1.1;
+
+    var valuesOfY = []
+    D.forEach(d => {
+        valuesOfY.push(d.Y)
+    })
+    var Ymin = Math.min(...valuesOfY) * 1.1;
+    var Ymax = Math.max(...valuesOfY) * 1.1;
+
+    var result = await decisionTree(D, A, Arbol, "root", '', Xmin, Xmax, Ymin, Ymax);
+    cantPartitions = partitions.length
     return result;
 }
 
 
-function decisionTree(D, A, T, Branch, subset) {
+function decisionTree(D, A, T, Branch, subset, Xi, Xf, Yi, Yf) {
     // Cargo en C los Cj del dataset.       
     var C = [] // Defino un arreglo vacío
     D.forEach(d => {
@@ -141,7 +159,6 @@ function decisionTree(D, A, T, Branch, subset) {
                 /* CASO BASE 3 */
             } else {
                 // Ag es capaz de reducir la impureza p0.
-
                 // Agrego un Nodo para el atributo Ag.
                 var nodo = new Nodo(Branch, Ag.attribute, Ag.valueOfSplit, subset)
                 // Si es la primer llamada a la función T = null, por lo tanto nodo será el nodo raíz y no admite el metodo add()
@@ -153,6 +170,28 @@ function decisionTree(D, A, T, Branch, subset) {
                     arbolesStepByStep.push(JSON.parse(JSON.stringify(T)))
                     Arbol = T
                 }
+
+                /* Genero un segmento de recta para el grafico de particiones en la distribución de puntos */
+                var part = {
+                    x: [],
+                    y: [],
+                    name: 'Partición: ' + (partitions.length + 1),
+                    mode: "lines",
+                    type: "scatter",
+                    marker: {
+                        color: "rgb(0, 0, 0)",
+                    },
+                }
+
+                if (Ag.attribute == 'X') {
+                    part.x = [Ag.valueOfSplit, Ag.valueOfSplit];
+                    part.y = [Yi, Yf]
+                } else {
+                    part.x = [Xi, Xf];
+                    part.y = [Ag.valueOfSplit, Ag.valueOfSplit];
+                }
+                partitions.push(part)
+
 
                 // Partir D en m subconjuntos D1, ..., Dm basados ​​en los m valores de Ag.
                 // En nuestro caso solo tendremos dos particiones
@@ -173,26 +212,26 @@ function decisionTree(D, A, T, Branch, subset) {
                 });
                 // Si el subset de D no está vacío llamo a la función con los nuevos parámetros 
                 if (DMenoresOIgual != []) {
-                    decisionTree(DMenoresOIgual, A, nodo, '<= ' + Ag.valueOfSplit, '<=')
+                    if (Ag.attribute == 'X') {
+                        decisionTree(DMenoresOIgual, A, nodo, '<= ' + Ag.valueOfSplit, '<=', Xi, Ag.valueOfSplit, Yi, Yf)
+                    } else {
+                        decisionTree(DMenoresOIgual, A, nodo, '<= ' + Ag.valueOfSplit, '<=', Xi, Xf, Yi, Ag.valueOfSplit)
+                    }
+                    //decisionTree(DMenoresOIgual, A, nodo, '<= ' + Ag.valueOfSplit, '<=', Xi, Xf, Yi, Yf)
                 }
                 if (DMayor != []) {
-                    decisionTree(DMayor, A, nodo, '> ' + Ag.valueOfSplit, '>')
+                    if (Ag.attribute == 'X') {
+                        decisionTree(DMayor, A, nodo, '> ' + Ag.valueOfSplit, '>', Ag.valueOfSplit, Xf, Yi, Yf)
+                    } else {
+                        decisionTree(DMayor, A, nodo, '> ' + Ag.valueOfSplit, '>', Xi, Xf, Ag.valueOfSplit, Yf)
+                    }
+                    //decisionTree(DMayor, A, nodo, '> ' + Ag.valueOfSplit, '>', Xi, Xf, Yi, Yf)
                 }
                 /* LLAMADA RECURSIVA */
             }
         }
 
     }
-
-
-
-    // En la primer llamada a la función la variable Arbol = null y se genera la raiz (T).
-    /* if (!Arbol) {
-        Arbol = T // asigno la raiz (T) a la variable Arbol.
-    } */
-
-    /* //Voy resguardando los árboles generados en cada llamada a la función para la gráfica paso a paso
-    arbolesStepByStep.push(JSON.parse(JSON.stringify(Arbol))) */
 
     return Arbol
 }

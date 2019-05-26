@@ -1,16 +1,21 @@
 function plotPoints(Dataset) {
-    var C1 = 'false';
-    var C2 = 'true';
+    var C = [] // Defino un arreglo vacío
+    D.forEach(d => {
+        C.push(d.Clase)
+    });
+    C = [...new Set(C.map(a => a))]
+    var C1 = C[0]
+    var C2 = C[1]
 
     var clase1 = {
         x: [],
         y: [],
         mode: 'markers',
         type: 'scatter',
-        name: 'Class: '+ C1,
-        //text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+        name: 'Clase: ' + C1,
         marker: {
-            size: 12
+            size: 8,
+            color: 'red'
         }
     };
 
@@ -19,15 +24,15 @@ function plotPoints(Dataset) {
         y: [],
         mode: 'markers',
         type: 'scatter',
-        name: 'Class: '+ C2,
-        //text: ['B-a', 'B-b', 'B-c', 'B-d', 'B-e'],
+        name: 'Clase: ' + C2,
         marker: {
-            size: 12
+            size: 8,
+            color: 'blue'
         }
     };
 
     Dataset.forEach(point => {
-        if (point.Clase == C1){
+        if (point.Clase == C1) {
             clase1.x.push(point.X)
             clase1.y.push(point.Y)
         } else {
@@ -36,18 +41,52 @@ function plotPoints(Dataset) {
         }
     });
 
-
     var data = [clase1, clase2];
+    for (let i = 0; i < cantPartitions; i++) {
+        const element = partitions[i];
+        data.push(element)
+    }
 
-    var layout = {
-        /* xaxis: {
-            range: [0.75, 5.25]
-        },
-        yaxis: {
-            range: [0, 8]
-        }, */
-        /* title: 'Distribución de Puntos' */
+    var options = {
+        scrollZoom: true,
+        displayModeBar: false,
     };
 
-    Plotly.newPlot('chart', data, layout);
+    Plotly.newPlot('chart', data, {}, options);
+}
+
+
+function redibujarPuntos(paso) {
+    cantPartitions = paso
+    if (paso == 0) {
+        document.querySelector("#btnPartAnterior").disabled = true
+    }
+    if (paso == partitions.length) {
+        document.querySelector("#btnPartSiguiente").disabled = true
+    }
+    if (paso > 0 && paso < partitions.length) {
+        document.querySelector("#btnPartAnterior").disabled = false
+        document.querySelector("#btnPartSiguiente").disabled = false
+    }
+
+    plotPoints(D)
+
+}
+
+function partAnterior() {
+    var actual = parseInt(document.querySelector("#partActual").value)
+
+    if (actual == 0) {
+        document.querySelector("#btnPartAnterior").disabled = true
+        return
+    }
+
+    document.querySelector("#partActual").value = actual - 1
+    redibujarPuntos(actual - 1)
+}
+
+function partSiguiente() {
+    var actual = parseInt(document.querySelector("#partActual").value)
+    document.querySelector("#partActual").value = actual + 1
+    redibujarPuntos(actual + 1)
 }

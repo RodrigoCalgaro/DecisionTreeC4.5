@@ -54,7 +54,7 @@ function procesarDataset(data) {
     /* var D = []; */
     data.shift() // remuevo el primer objeto (cabecera) que contiene los nombres de los atributos 
     data.forEach(row => {
-        D.push(new Point(parseFloat(row[1]), parseFloat(row[2]), row[3]))
+        D.push(new Point(parseFloat(row[0]), parseFloat(row[1]), row[2]))
     })
     /* plotPoints(D); */
     drawTree(D);
@@ -83,6 +83,10 @@ async function drawTree(D) {
     document.querySelector("#iptTotal").value = arbolesStepByStep.length
     printTree(Arbol, "#tree-simple")
     document.querySelector("#selection-form-test").classList.remove('d-none');
+
+    document.querySelector("#partActual").value = partitions.length
+    document.querySelector("#partActual").max = partitions.length
+    document.querySelector("#partTotal").value = partitions.length
 }
 
 /* Para Graficar el Árbol */
@@ -192,6 +196,12 @@ function redibujarArbol(paso) {
 function anterior() {
     collapsed = false
     var actual = parseInt(document.querySelector("#iptActual").value)
+
+    if (actual == 1) {
+        document.querySelector("#btnAnterior").disabled = true
+        return
+    }
+
     document.querySelector("#iptActual").value = actual - 1
     redibujarArbol(actual - 1)
 }

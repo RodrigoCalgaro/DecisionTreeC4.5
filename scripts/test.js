@@ -45,7 +45,7 @@ function procesarDatasetPrueba(data) {
     var D = [];
     data.shift() // remuevo el primer objeto (cabecera) que contiene los nombres de los atributos 
     data.forEach(row => {
-        D.push(new Point(parseFloat(row[1]), parseFloat(row[2]), row[3]))
+        D.push(new Point(parseFloat(row[0]), parseFloat(row[1]), row[2]))
     })
 
     cantCasos = 0
