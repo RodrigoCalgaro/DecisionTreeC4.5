@@ -1,8 +1,12 @@
 var divPuntoEnArbol = document.querySelector("#punto-en-arbol")
 var nodos;
 var pasos = []
+var classifiedResult = ''
+var supportAndConfidence = ''
 
 async function clasificar() {
+    classifiedResult = ''
+    supportAndConfidence = ''
     var X = parseFloat(document.querySelector("#Xcoord").value)
     var Y = parseFloat(document.querySelector("#Ycoord").value)
 
@@ -22,6 +26,8 @@ async function clasificar() {
         nodos = divPuntoEnArbol.querySelectorAll(".node-branch")
 
         await clasificarPunto(point, Arbol)
+        document.querySelector("#classifiedResult").innerHTML = classifiedResult.replace("root, ",'')
+        document.querySelector("#supportAndConfidence").innerHTML = supportAndConfidence
         nodos.forEach(nodo => {
             pasos.forEach(paso => {
                 if (nodo.innerHTML.replace(/&lt;/g, "<").replace(/&gt;/g, ">").includes(paso)) {
@@ -33,13 +39,13 @@ async function clasificar() {
 
 }
 
-
 function clasificarPunto(point, Arbol) {
     if (Arbol.childs) {
         if (point[Arbol.name] <= Arbol.valueOfSplit) {
             Arbol.childs.forEach(child => {
                 if (child.subset == '<=') {
                     pasos.push(Arbol.branch)
+                    classifiedResult += Arbol.branch + ', ' + Arbol.name + ' '
                     clasificarPunto(point, child)
                 }
             })
@@ -47,12 +53,15 @@ function clasificarPunto(point, Arbol) {
             Arbol.childs.forEach(child => {
                 if (child.subset == '>') {
                     pasos.push(Arbol.branch)
+                    classifiedResult += Arbol.branch + ', ' + Arbol.name + ' '
                     clasificarPunto(point, child)
                 }
             })
         }
     } else {
         pasos.push(Arbol.branch)
+        classifiedResult += Arbol.branch + ' → ' + Arbol.name
+        supportAndConfidence += 'Soporte: ' + parseFloat(Arbol.support * 100).toFixed(2) + ' % , Confianza: ' + parseFloat(Arbol.confidence * 100).toFixed(2) + ' %' 
         return
     }
 }
