@@ -34,6 +34,13 @@ function readFilePrueba(filepath) {
                 console.error(err);
                 return false;
             }
+            var fieldDelimiter = document.querySelector("#fieldDelimiter").value
+            if(fieldDelimiter == 'semicolon'){
+                for (let i = 0; i < data.length; i++) {
+                    const element = data[i][0].split(";");
+                    data[i] = element
+                }
+            }
             procesarDatasetPrueba(data)
         })
 

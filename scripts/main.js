@@ -41,6 +41,13 @@ function readFile(filepath) {
                 console.error(err);
                 return false;
             }
+            var fieldDelimiter = document.querySelector("#fieldDelimiter").value
+            if(fieldDelimiter == 'semicolon'){
+                for (let i = 0; i < data.length; i++) {
+                    const element = data[i][0].split(";");
+                    data[i] = element
+                }
+            }
             procesarDataset(data)
         })
 
@@ -51,12 +58,10 @@ function readFile(filepath) {
 var D = [];
 
 function procesarDataset(data) {
-    /* var D = []; */
     data.shift() // remuevo el primer objeto (cabecera) que contiene los nombres de los atributos 
     data.forEach(row => {
         D.push(new Point(parseFloat(row[0]), parseFloat(row[1]), row[2]))
     })
-    /* plotPoints(D); */
     drawTree(D);
 }
 
