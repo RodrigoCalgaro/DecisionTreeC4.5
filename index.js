@@ -17,7 +17,7 @@ app.on('ready', () => {
       slashes: true
     }))
     
-    /* mainWindow.setMenu(null) */
+    //mainWindow.setMenu(null)
 
     // If we close main Window the App quit
     mainWindow.on('closed', () => {
