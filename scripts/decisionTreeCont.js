@@ -136,7 +136,7 @@ function decisionTree(D, A, T, Branch, subset, Xi, Xf, Yi, Yf) {
             } else {
                 best = Ag.gain
             }
-            if (best <= threshold) {
+            if (best < threshold) {
                 // Si la ganancia del atributo Ag es menor al threshold definido
                 // agrega una hoja etiquetada con la Clase cj, que es la Clase más frecuente en D.
                 var C1 = 0 // Cantidad de registros con la Clase 1 (Más frecuente debido a que se ordenó previamente)
@@ -159,6 +159,30 @@ function decisionTree(D, A, T, Branch, subset, Xi, Xf, Yi, Yf) {
                 /* CASO BASE 3 */
             } else {
                 // Ag es capaz de reducir la impureza p0.
+
+                 /* 
+                  DMenoresOIgual es un subset de D que contiene los registros para los cuales el valor de Ai es menor o igual al valor de división  
+                  DMayores es un subset de D que contiene los registros para los cuales el valor de Ai es mayor al valor de división  
+                */
+               var DMenoresOIgual = []
+               var DMayor = []
+               D.forEach(d => {
+                   if (d[Ag.attribute] <= Ag.valueOfSplit) {
+                       DMenoresOIgual.push(d)
+                   } else {
+                       DMayor.push(d)
+                   }
+               });
+
+               var arrayOfMayores = []
+               DMayor.forEach(elem => {
+                   arrayOfMayores.push(elem[Ag.attribute])
+               })
+               var min = Math.min(...arrayOfMayores)
+               console.log(min)
+               Ag.valueOfSplit = (min + Ag.valueOfSplit)/2
+
+
                 // Agrego un Nodo para el atributo Ag.
                 var nodo = new Nodo(Branch, Ag.attribute, Ag.valueOfSplit, subset)
                 // Si es la primer llamada a la función T = null, por lo tanto nodo será el nodo raíz y no admite el metodo add()
@@ -197,19 +221,7 @@ function decisionTree(D, A, T, Branch, subset, Xi, Xf, Yi, Yf) {
                 // En nuestro caso solo tendremos dos particiones
                 // (n <= Ag.valueOfSplit y n > Ag.valueOfSplit, siendo n el valor de X o Y que aporta mayor ganancia)
 
-                /* 
-                  DMenoresOIgual es un subset de D que contiene los registros para los cuales el valor de Ai es menor o igual al valor de división  
-                  DMayores es un subset de D que contiene los registros para los cuales el valor de Ai es mayor al valor de división  
-                */
-                var DMenoresOIgual = []
-                var DMayor = []
-                D.forEach(d => {
-                    if (d[Ag.attribute] <= Ag.valueOfSplit) {
-                        DMenoresOIgual.push(d)
-                    } else {
-                        DMayor.push(d)
-                    }
-                });
+               
                 // Si el subset de D no está vacío llamo a la función con los nuevos parámetros 
                 if (DMenoresOIgual != []) {
                     if (Ag.attribute == 'X') {
@@ -301,9 +313,9 @@ function giveMeTheBest(Ai, D, p0) {
     }
     if (valuesOfAi.length == 0) {
         best = {
-            gain: 0,
+            gain: -1,
             splitInfo: 1,
-            gainRatio: 0,
+            gainRatio: -1,
             attribute: Ai,
             valueOfSplit: max
         }
